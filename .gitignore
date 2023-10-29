@@ -1,1 +1,4 @@
-platedetectionvenv
+.conda/
+.ipynb_checkpoints/
+dataset_kaggle/
+~$ndszámfelismerő rendszer benzinkutakhoz.docx
