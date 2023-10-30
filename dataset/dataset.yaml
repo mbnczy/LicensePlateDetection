@@ -1,5 +1,5 @@
 
-path: /kaggle/working/dataset
+path: /Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/dataset
 train: images/train
 val: images/val
 test:
