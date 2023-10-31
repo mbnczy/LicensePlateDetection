@@ -3,3 +3,6 @@
 dataset_kaggle/
 ~$ndszámfelismerő rendszer benzinkutakhoz.docx
 dataset/
+runs/
+dataset.zip
+models/
