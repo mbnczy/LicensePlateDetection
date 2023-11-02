@@ -7,3 +7,4 @@ yolov8n.pt
 runs/detect/
 models/
 dataset.zip
+video_data/
