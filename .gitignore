@@ -13,3 +13,6 @@ Logic/sortrep
 Logic/__pycache__/RealtimeTracking.cpython-38.pyc
 Logic/__pycache__/RealtimeTracking.cpython-39.pyc
 Logic/__pycache__/RealtimeTracking.cpython-310.pyc
+Logic/output.avi
+Logic/log_interpolated.csv
+Logic/log.csv
