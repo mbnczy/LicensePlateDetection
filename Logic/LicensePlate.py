@@ -119,7 +119,7 @@ class LicensePlateReader():
         for det in detections:
             bbox, text, score = det
             formatted_text = text.upper().replace(' ','')
-            if self.CheckSyntax(formatted_text)
+            if self.CheckSyntax(formatted_text):
                 return formatted_text,score,license_plate
         lp_Text='error: no det'
         lp_Conf_score = 1

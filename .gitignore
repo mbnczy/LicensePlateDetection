@@ -19,3 +19,4 @@ Logic/log.csv
 Logic/__pycache__/LicensePlate.cpython-38.pyc
 Logic/__pycache__/utils.cpython-38.pyc
 Logic/__pycache__/Vehicle.cpython-38.pyc
+logs/
