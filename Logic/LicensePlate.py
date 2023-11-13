@@ -83,9 +83,8 @@ class LicensePlateReader():
         for det in detections:
             bbox, text, score = det
             formatted_text = text.upper().replace(' ','')
-        if formatted_text is not None:
+        if formatted_text is not None and self.CheckSyntax(formatted_text):
             results_list.append((formatted_text,score))
-            
         try:
             formatted_text = max(results_list, key=lambda x: x[1])[0]
             score = max(results_list, key=lambda x: x[1])[1]
@@ -114,14 +113,20 @@ class LicensePlateReader():
         gauss_filtered = cv2.GaussianBlur(gauss2_filtered, (3,3), 2)
         final = cv2.filter2D(gauss_filtered, -1, sharpening_filter) 
 
+        
+
         detections = self.model.readtext(final)
         for det in detections:
             bbox, text, score = det
             formatted_text = text.upper().replace(' ','')
-            return formatted_text,score,license_plate
+            if self.CheckSyntax(formatted_text)
+                return formatted_text,score,license_plate
         lp_Text='error: no det'
         lp_Conf_score = 1
         return lp_Text, lp_Conf_score,license_plate
 
-    
+    def CheckSyntax(self, text: str) ->bool:
+        return ((not any(not c.isalnum() for c in text)) and len(text) > 5)
+
+
  
