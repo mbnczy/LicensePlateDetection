@@ -61,7 +61,7 @@ class LicensePlateReader():
         for det in detections:
             bbox, text, score = det
             formatted_text = text.upper().replace(' ','')
-        if formatted_text is not None:
+        if formatted_text is not None and self.CheckSyntax(formatted_text):
             results_list.append((formatted_text,score))
 
         inv_thresholded = cv2.bitwise_not(lp_thresholded)
@@ -70,7 +70,7 @@ class LicensePlateReader():
         for det in detections:
             bbox, text, score = det
             formatted_text = text.upper().replace(' ','')
-        if formatted_text is not None:
+        if formatted_text is not None and self.CheckSyntax(formatted_text):
             results_list.append((formatted_text,score))
 
 
@@ -122,7 +122,7 @@ class LicensePlateReader():
             if self.CheckSyntax(formatted_text):
                 return formatted_text,score,license_plate
         lp_Text='error: no det'
-        lp_Conf_score = 1
+        lp_Conf_score = 0
         return lp_Text, lp_Conf_score,license_plate
 
     def CheckSyntax(self, text: str) ->bool:
