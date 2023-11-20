@@ -48,6 +48,7 @@ class LicensePlateReader():
         return lp_Text, lp_Conf_score,license_plate
     
     def MultiplyPrepAndRead(self,license_plate):
+        gc.collect()
         formatted_text = None
         results_list = []
         lp_gray = cv2.cvtColor(license_plate,cv2.COLOR_BGR2GRAY)
@@ -63,7 +64,7 @@ class LicensePlateReader():
             formatted_text = text.upper().replace(' ','')
         if formatted_text is not None and self.CheckSyntax(formatted_text):
             results_list.append((formatted_text,score))
-
+        gc.collect()
         inv_thresholded = cv2.bitwise_not(lp_thresholded)
         
         detections = self.model.readtext(inv_thresholded)
@@ -72,7 +73,7 @@ class LicensePlateReader():
             formatted_text = text.upper().replace(' ','')
         if formatted_text is not None and self.CheckSyntax(formatted_text):
             results_list.append((formatted_text,score))
-
+        gc.collect()
 
         median_filtered = cv2.medianBlur(inv_thresholded, 3)
         gauss3_filtered = cv2.GaussianBlur(inv_thresholded, (3,3), 2)
@@ -85,16 +86,17 @@ class LicensePlateReader():
             formatted_text = text.upper().replace(' ','')
         if formatted_text is not None and self.CheckSyntax(formatted_text):
             results_list.append((formatted_text,score))
+        gc.collect()
         try:
             formatted_text = max(results_list, key=lambda x: x[1])[0]
             score = max(results_list, key=lambda x: x[1])[1]
             # Additional code if needed
         except ValueError:
             print("Error: results_list is empty or contains tuples without a second element.")
-            formatted_text = None
-            score = None
+            formatted_text = 'error: no det'
+            score = 0
             # Handle the exception as needed
-
+        
         return formatted_text, score, gauss_filtered
         
 
