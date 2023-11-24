@@ -237,3 +237,72 @@ def modified_interpolate(data):
             interpolated_data.append(row)
 
     return interpolated_data
+
+def modified_interpolate_all(data):
+    # Extract necessary data columns from input data
+    frame_numbers = np.array([int(row['fr_number']) for row in data])
+    ids = np.array([int(float(row['id'])) for row in data])
+    #car_bboxes = np.array([list(map(float, row['v_bbox'][1:-1].split(', '))) for row in data])
+    license_plate_bboxes = np.array([list(map(float, row['lp_bbox'][1:-1].split(', '))) for row in data])
+    lp_confidences = np.array([float(row.get('lp_score', '0')) for row in data])
+
+    interpolated_data = []
+    unique_ids = np.unique(ids)
+
+    for id in unique_ids:
+        # Filter data for a specific car ID
+        mask = ids == id
+        lp_frame_numbers = frame_numbers[mask]
+        license_plate_bboxes_interpolated = []
+        frame_numbers_ = [p['fr_number'] for p in data if int(float(p['id'])) == int(float(id))]
+        
+
+        first_frame_number = lp_frame_numbers[0]
+        last_frame_number = lp_frame_numbers[-1]
+
+        for i in range(len(license_plate_bboxes[mask])):
+            frame_number = lp_frame_numbers[i]
+            bbox = license_plate_bboxes[mask][i]
+            license_plate_bbox = license_plate_bboxes[mask][i]
+
+            if i > 0:
+                prev_frame_number = lp_frame_numbers[i-1]
+                prev_license_plate_bbox = license_plate_bboxes_interpolated[-1]
+
+                if frame_number - prev_frame_number > 1:
+                    # Interpolate missing frames' bounding boxes
+                    frames_gap = frame_number - prev_frame_number
+                    x = np.array([prev_frame_number, frame_number])
+                    x_new = np.linspace(prev_frame_number, frame_number, num=frames_gap, endpoint=False)
+                    interp_func = interp1d(x, np.vstack((prev_license_plate_bbox, license_plate_bbox)), axis=0, kind='linear')
+                    interpolated_license_plate_bboxes = interp_func(x_new)
+
+                    license_plate_bboxes_interpolated.extend(interpolated_license_plate_bboxes[1:])
+
+            license_plate_bboxes_interpolated.append(license_plate_bbox)
+
+        for i in range(len(license_plate_bboxes_interpolated)):
+            frame_number = first_frame_number + i
+            row = {}
+            row['fr_number'] = str(frame_number)
+            row['id'] = str(id)
+            row['lp_bbox'] = ' '.join(map(str, license_plate_bboxes_interpolated[i]))
+
+            # Include license plate information with the best confidence score
+            #best_confidence_indices = np.where(mask)[0]
+            #best_confidence_row_idx = best_confidence_indices[best_confidence_idx]
+            
+            #row['lp_bbox'] = ' '.join(map(str, best_confidence_lp))
+            if str(frame_number) not in frame_numbers_:
+                # Imputed row, set the following fields to '0'
+                row['lp_bbox_score'] = '0'
+                row['lp'] = '0'
+                row['lp_score'] = '0'
+            else:
+                original_row = [p for p in data if int(p['fr_number']) == frame_number and int(float(p['id'])) == int(float(id))][0]
+                row['lp_bbox_score'] = original_row['lp_bbox_score'] if 'lp_bbox_score' in original_row else '0'
+                row['lp'] = original_row['lp'] if 'lp' in original_row else '0'
+                row['lp_score'] = original_row['lp_score'] if 'lp_score' in original_row else '0'
+            interpolated_data.append(row)
+
+    return interpolated_data
