@@ -14,7 +14,7 @@ class LicensePlateDetection():
         if modeltype == 'yolov8n_90e_cust':
             self.model = YOLO('/Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/models/YOLOv8/yolov8n_90e_cust/runs/detect/train4/weights/best.pt')
     def Detect(self, frame):
-        return self.model(frame)[0]
+        return self.model(frame, verbose=False)[0]
 
 class LicensePlateReader():
     def __init__(self,modeltype: str) -> None:
