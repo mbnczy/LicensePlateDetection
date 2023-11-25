@@ -31,9 +31,11 @@ class LicensePlateReader():
         for det in detections:
             bbox, text, score = det
             formatted_text = text.upper().replace(' ','')
+            if self.CheckSyntax(formatted_text):
+                return formatted_text,score,license_plate
             return formatted_text,score,lp_thresholded
         lp_Text='error'
-        lp_Conf_score = 1
+        lp_Conf_score = 0
         return lp_Text, lp_Conf_score,lp_thresholded
     
     def Read(self, license_plate):
@@ -44,7 +46,7 @@ class LicensePlateReader():
             formatted_text = text.upper().replace(' ','')
             return formatted_text,score,license_plate
         lp_Text='error'
-        lp_Conf_score = 1
+        lp_Conf_score = 0
         return lp_Text, lp_Conf_score,license_plate
     
     def MultiplyPrepAndRead(self,license_plate):
@@ -93,7 +95,7 @@ class LicensePlateReader():
             # Additional code if needed
         except ValueError:
             print("Error: results_list is empty or contains tuples without a second element.")
-            formatted_text = 'error: no det'
+            formatted_text = 'error'
             score = 0
             # Handle the exception as needed
         
@@ -123,7 +125,7 @@ class LicensePlateReader():
             formatted_text = text.upper().replace(' ','')
             if self.CheckSyntax(formatted_text):
                 return formatted_text,score,license_plate
-        lp_Text='error: no det'
+        lp_Text='error'
         lp_Conf_score = 0
         return lp_Text, lp_Conf_score,license_plate
 
