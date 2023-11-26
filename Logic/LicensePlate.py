@@ -11,8 +11,7 @@ from scipy.interpolate import interp1d
 class LicensePlateDetection():
     def __init__(self,modeltype: str) -> None:
         self.type = modeltype
-        if modeltype == 'yolov8n_90e_cust':
-            self.model = YOLO('/Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/models/YOLOv8/yolov8n_90e_cust/runs/detect/train4/weights/best.pt')
+        self.model = YOLO(f'/Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/models/YOLOv8/{self.type}/runs/detect/train/weights/best.pt')
     def Detect(self, frame):
         return self.model(frame, verbose=False)[0]
     
