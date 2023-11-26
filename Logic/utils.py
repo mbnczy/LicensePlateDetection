@@ -175,6 +175,12 @@ def interpolate_bounding_boxes_bestScore(data):
 
     return interpolated_data
 
+def interpolate_license_plates(data,bestscore=True):
+    if bestscore:
+        return modified_interpolate(data)
+    else:
+        return modified_interpolate_all(data)
+    
 def modified_interpolate(data):
     # Extract necessary data columns from input data
     frame_numbers = np.array([int(row['fr_number']) for row in data])

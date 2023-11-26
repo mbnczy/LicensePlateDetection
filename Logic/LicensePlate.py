@@ -15,6 +15,23 @@ class LicensePlateDetection():
             self.model = YOLO('/Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/models/YOLOv8/yolov8n_90e_cust/runs/detect/train4/weights/best.pt')
     def Detect(self, frame):
         return self.model(frame, verbose=False)[0]
+    
+    @staticmethod
+    def noOverlap(plates) -> bool:
+        if len(plates)>1:
+            actual = list(plates).pop(len(plates)-1)
+            act_x1, act_y1, act_x2, act_y2, act_score, act_class_id = actual
+            act_w = act_x2-act_x1
+            act_h = act_y2-act_y1
+            for plate in plates:
+                x1, y1, x2, y2, score, class_id = plate
+
+                if not ((act_x2 < x1 or act_x1 > x2) or (act_y2 < y1 or act_y1 > y2)):
+                    return False
+            return True
+        else:
+            return True
+
 
 class LicensePlateReader():
     def __init__(self,modeltype: str) -> None:
@@ -125,7 +142,7 @@ class LicensePlateReader():
             formatted_text = text.upper().replace(' ','')
             if self.CheckSyntax(formatted_text):
                 return formatted_text,score,license_plate
-        lp_Text='error'
+        lp_Text=' '
         lp_Conf_score = 0
         return lp_Text, lp_Conf_score,license_plate
 
