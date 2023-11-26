@@ -1,0 +1,77 @@
+# %%
+import streamlit as st
+from PIL import Image
+import cv2
+import numpy as np
+import pandas as pd
+import sys
+import os
+sys.path.insert(0, '/Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/Logic')
+import main_logic as logic
+
+
+#   cmd line tool for desktop app from streamlit website: 
+#       nativefier --name "LicensePlateDetector" "http://localhost:8515" --platform "mac"
+
+
+
+def main():
+    st.set_page_config(layout="wide")
+
+    st.title("License Plate Prediction App")
+
+    #st.header("Upload Video")
+    uploaded_file = st.file_uploader("Choose a video file", type=["mp4", "avi", "mov"])
+    if uploaded_file is not None:
+        newpath = os.path.join("/Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/video_data",f'{uploaded_file.name[0:-4]}_uploaded.mp4')
+        with open(newpath,"wb") as f:
+            f.write(uploaded_file.getbuffer())
+        st.success("Video uploaded", icon='✅')
+
+    params_col1, params_col2 = st.columns(2)
+    with params_col1:    
+        st.header("Choose Model")
+        model_name = st.selectbox("Select a model", 
+                                  ["Yolo v8 - M (120)",
+                                    "Yolo v8 - N (120)",
+                                    "Yolo v8 - N (90)",
+                                    "Yolo v8 - N (60)",
+                                    "Yolo v8 - N (30)"])
+        
+    with params_col2:
+        st.header('Params')
+        bestscore = st.checkbox("Show only the best scored lp for each frame")
+
+
+
+    btn_predict = st.button("Predict")
+    
+
+    #out1, out2 = st.columns(2)
+    output_video = None
+    #with out1:
+    #    if uploaded_file is not None:
+    #        st.video(uploaded_file)
+    #with out2:
+    if btn_predict:
+        if uploaded_file is not None:
+            #video_bytes = uploaded_file.read()
+            #video_np = np.frombuffer(video_bytes, np.uint8)
+            #input_video = cv2.imdecode(video_np, cv2.IMREAD_COLOR)
+            output_video = perform_prediction(newpath, model_name,bestscore)
+            
+            #st.video(output_video.tobytes())testvideo_path[0:-4]+'_lp.avi'
+            st.video(newpath[0:-4]+'_lp.mp4')
+            st.success('Prediction complete!', icon='✅')
+            st.header('log')
+            st.dataframe(pd.read_csv('/Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/logs/time_log.csv'))
+                
+def perform_prediction(localpath, model_name, showonlybestconf):
+    with st.spinner('Predicting...'):
+        logic.Run(localpath, model_name, showonlybestconf)
+    #st.success('Prediction complete!', icon='✅')
+
+if __name__ == "__main__":
+    main()
+
+
