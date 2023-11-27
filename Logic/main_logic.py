@@ -13,7 +13,8 @@ from utils import interpolate_license_plates
 import ast
 from datetime import datetime, timedelta
 import ffmpeg
-from RealtimeTracking import Sort
+#from RealtimeTracking import Sort
+from sort.sort import *
 
 def GetModel(select_name):
     keys = ["Yolo v8 - M (120)",
@@ -29,7 +30,7 @@ def GetModel(select_name):
     return dict(zip(keys, values))[select_name]
 
 def Run(input_path, model, showonlybestconf):
-    mot_trckr = Sort()
+    mot_tracker= Sort()
 
     norm_model_name = GetModel(model)
     #testvideo_path = '/Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/video_data/IMG_0493.mp4'
@@ -65,20 +66,33 @@ def Run(input_path, model, showonlybestconf):
 
         if ret:
             det_lps = lp_detection.Detect(frame)
+            detections = det_lps.boxes.data.tolist()
+            tracks = []
+            for det in detections:
+                tracks.append([det[0],det[1],det[2],det[3],det[4]])
             platesonframe = []
+            track_bbs_ids = mot_tracker.update(np.asarray(tracks))
+            #print(track_bbs_ids)
+            #print(track_bbs_ids[0])
+            #print(track_bbs_ids[0,4])
+            
 
-            for lp_index, det_lp in enumerate(det_lps.boxes.data.tolist()):
+            for lp_index, det_lp in enumerate(detections):
                 lp_x1, lp_y1, lp_x2, lp_y2, lp_score, lp_class_id = det_lp
                 if LicensePlateDetection.noOverlapp(platesonframe,det_lp):
                     license_plate = frame[int(lp_y1):int(lp_y2), int(lp_x1):int(lp_x2), :]
                     lp_text, lp_text_confscore, lp_prep = lp_reader.PrepAndRead(license_plate)
-                    if lp_text != None:
-                        df_rows.append({'fr_number': frame_indexer,
-                                        'id': lp_index,
-                                        'lp_bbox': [lp_x1, lp_y1, lp_x2, lp_y2],
-                                        'lp_bbox_score': lp_score,
-                                        'lp': lp_text,
-                                        'lp_score': lp_text_confscore})
+                    try:
+                        if lp_index < len(detections):
+                            if lp_text != None:
+                                df_rows.append({'fr_number': frame_indexer,
+                                            'id': track_bbs_ids[lp_index,4],
+                                            'lp_bbox': [lp_x1, lp_y1, lp_x2, lp_y2],
+                                            'lp_bbox_score': lp_score,
+                                            'lp': lp_text,
+                                            'lp_score': lp_text_confscore})
+                    except:
+                        print('error')
                 platesonframe.append(det_lp)
         frame_indexer += 1
     video_capture.release()
