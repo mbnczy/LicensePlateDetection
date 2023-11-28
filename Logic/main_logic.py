@@ -29,7 +29,7 @@ def GetModel(select_name):
             "yolov8n_30e_pre"]
     return dict(zip(keys, values))[select_name]
 
-def Run(input_path, model, showonlybestconf):
+def Run(input_path, model, showonlybestconf, im):
     mot_tracker= Sort()
 
     norm_model_name = GetModel(model)
@@ -81,8 +81,14 @@ def Run(input_path, model, showonlybestconf):
                 lp_x1, lp_y1, lp_x2, lp_y2, lp_score, lp_class_id = det_lp
                 if LicensePlateDetection.noOverlapp(platesonframe,det_lp):
                     license_plate = frame[int(lp_y1):int(lp_y2), int(lp_x1):int(lp_x2), :]
-                    lp_text, lp_text_confscore, lp_prep = lp_reader.PrepAndRead(license_plate)
+                    if im == 'weak':
+                        lp_text, lp_text_confscore, lp_prep = lp_reader.PrepAndRead(license_plate)
+                    elif im == 'mid':
+                        lp_text, lp_text_confscore, lp_prep = lp_reader.ModifiedPrepAndRead(license_plate)
+                    else:
+                        lp_text, lp_text_confscore, lp_prep = lp_reader.MultiplyPrepAndRead(license_plate)
                     try:
+                        #print(f'good: {track_bbs_ids[lp_index]}, {lp_index}')
                         if lp_index < len(detections):
                             if lp_text != None:
                                 df_rows.append({'fr_number': frame_indexer,
@@ -92,7 +98,8 @@ def Run(input_path, model, showonlybestconf):
                                             'lp': lp_text,
                                             'lp_score': lp_text_confscore})
                     except:
-                        print('error')
+                        print(f'error: {track_bbs_ids}, {lp_index}')
+                        
                 platesonframe.append(det_lp)
         frame_indexer += 1
     video_capture.release()
@@ -140,10 +147,12 @@ def Run(input_path, model, showonlybestconf):
 
     gc.collect()
 
+    out_path = str(testvideo_path[0:-4]+'_lp_'+datetime.now().strftime("%Y-%d-%m-%H-%M-%S")+'.mp4')
     # %%
     draw_bounding_boxes_lp(testvideo_path,
                         '/Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/logs/log_interpolated.csv',
-                        testvideo_path[0:-4]+'_lp.mp4')
+                        out_path)
+    return out_path
 
 def draw_bounding_boxes_lp(input_video, interpolated_df, output_video_path):
 

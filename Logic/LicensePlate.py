@@ -122,7 +122,7 @@ class LicensePlateReader():
             # Additional code if needed
         except ValueError:
             print("Error: results_list is empty or contains tuples without a second element.")
-            formatted_text = 'error'
+            formatted_text = ' '
             score = 0
             # Handle the exception as needed
         
