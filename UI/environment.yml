@@ -1,0 +1,26 @@
+name: new_lpd
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - pytorch=2.0.0
+  - ultralytics
+  - ipykernel
+  - torchvision
+  - scikit-image
+  - filterpy
+  - pdf2image
+  - tesseract
+  - pillow
+  - wand
+  - imageio
+  - pathlib
+  - streamlit
+  - ffmpeg
+  - ffmpeg-python
+  - tensorflow
+  - scikit-learn
+  - nltk
+  - tensorflow-datasets
+  - pydot
+prefix: /Users/banoczymartin/anaconda3/envs/new_lpd

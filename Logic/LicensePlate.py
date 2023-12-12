@@ -1,13 +1,17 @@
 from ultralytics import YOLO
 import cv2
 import pandas as pd
-from RealtimeTracking import *
 import gc
 import easyocr
 import numpy as np
 import csv
 from scipy.interpolate import interp1d
 
+
+def overlap(box1, box2):
+        x1, y1, x2, y2,_,__ = box1
+        x3, y3, x4, y4,_,__ = box2
+        return not (x2 < x3 or x4 < x1 or y2 < y3 or y4 < y1)
 class LicensePlateDetection():
     def __init__(self,modeltype: str) -> None:
         self.type = modeltype
@@ -30,6 +34,13 @@ class LicensePlateDetection():
             return True
         else:
             return True
+    @staticmethod
+    def noOverlapp(existing_plates, new_plate):
+        for existing_plate in existing_plates:
+            if overlap(existing_plate, new_plate):
+                return False
+        return True
+    
 
 
 class LicensePlateReader():
@@ -50,7 +61,7 @@ class LicensePlateReader():
             if self.CheckSyntax(formatted_text):
                 return formatted_text,score,license_plate
             return formatted_text,score,lp_thresholded
-        lp_Text='error'
+        lp_Text=' '
         lp_Conf_score = 0
         return lp_Text, lp_Conf_score,lp_thresholded
     
@@ -111,7 +122,7 @@ class LicensePlateReader():
             # Additional code if needed
         except ValueError:
             print("Error: results_list is empty or contains tuples without a second element.")
-            formatted_text = 'error'
+            formatted_text = ' '
             score = 0
             # Handle the exception as needed
         

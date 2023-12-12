@@ -1,7 +1,6 @@
 # %%
 import streamlit as st
 from PIL import Image
-import cv2
 import numpy as np
 import pandas as pd
 import sys
@@ -27,7 +26,6 @@ def main():
         with open(newpath,"wb") as f:
             f.write(uploaded_file.getbuffer())
         st.success("Video uploaded", icon='✅')
-
     params_col1, params_col2 = st.columns(2)
     with params_col1:    
         st.header("Choose Model")
@@ -37,41 +35,39 @@ def main():
                                     "Yolo v8 - N (90)",
                                     "Yolo v8 - N (60)",
                                     "Yolo v8 - N (30)"])
-        
     with params_col2:
         st.header('Params')
+        im_type = st.selectbox("Image manipulation strength", ["weak","mid","strong"])
         bestscore = st.checkbox("Show only the best scored lp for each frame")
-
-
-
+        
+        
     btn_predict = st.button("Predict")
     
-
-    #out1, out2 = st.columns(2)
-    output_video = None
-    #with out1:
-    #    if uploaded_file is not None:
-    #        st.video(uploaded_file)
-    #with out2:
     if btn_predict:
         if uploaded_file is not None:
             #video_bytes = uploaded_file.read()
             #video_np = np.frombuffer(video_bytes, np.uint8)
             #input_video = cv2.imdecode(video_np, cv2.IMREAD_COLOR)
-            output_video = perform_prediction(newpath, model_name,bestscore)
-            
+            output_video_path = perform_prediction(newpath, model_name,bestscore,im_type)
             #st.video(output_video.tobytes())testvideo_path[0:-4]+'_lp.avi'
-            st.video(newpath[0:-4]+'_lp.mp4')
+            st.video(output_video_path)
             st.success('Prediction complete!', icon='✅')
             st.header('log')
             st.dataframe(pd.read_csv('/Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/logs/time_log.csv'))
-                
-def perform_prediction(localpath, model_name, showonlybestconf):
+            os.remove('/Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/logs/time_log.csv')
+            os.remove('/Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/logs/log_interpolated.csv')
+            #os.remove(output_video_path)
+            os.remove(os.path.join("/Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/video_data",f'{uploaded_file.name[0:-4]}_uploaded.mp4'))
+def perform_prediction(localpath, model_name, showonlybestconf,im_type):
     with st.spinner('Predicting...'):
-        logic.Run(localpath, model_name, showonlybestconf)
-    #st.success('Prediction complete!', icon='✅')
+        return logic.Run(localpath, model_name, showonlybestconf, im_type)
+
 
 if __name__ == "__main__":
     main()
 
 
+
+# %%
+
+# %%

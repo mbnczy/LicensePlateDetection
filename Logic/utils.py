@@ -1,7 +1,6 @@
 from ultralytics import YOLO
 import cv2
 import pandas as pd
-from RealtimeTracking import *
 import gc
 import easyocr
 import numpy as np
