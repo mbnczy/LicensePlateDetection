@@ -50,7 +50,6 @@ def main():
             #video_np = np.frombuffer(video_bytes, np.uint8)
             #input_video = cv2.imdecode(video_np, cv2.IMREAD_COLOR)
             output_video_path = perform_prediction(newpath, model_name,bestscore,im_type)
-            
             #st.video(output_video.tobytes())testvideo_path[0:-4]+'_lp.avi'
             st.video(output_video_path)
             st.success('Prediction complete!', icon='✅')
@@ -62,7 +61,7 @@ def main():
             os.remove(os.path.join("/Users/banoczymartin/Library/Mobile Documents/com~apple~CloudDocs/OE/platedetector/video_data",f'{uploaded_file.name[0:-4]}_uploaded.mp4'))
 def perform_prediction(localpath, model_name, showonlybestconf,im_type):
     with st.spinner('Predicting...'):
-        logic.Run(localpath, model_name, showonlybestconf, im_type)
+        return logic.Run(localpath, model_name, showonlybestconf, im_type)
 
 
 if __name__ == "__main__":

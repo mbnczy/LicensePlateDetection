@@ -22,11 +22,11 @@ def GetModel(select_name):
             "Yolo v8 - N (90)",
             "Yolo v8 - N (60)",
             "Yolo v8 - N (30)"]
-    values = ["yolov8m_120e_cust",
-            "yolov8n_120e_cust",
-            "yolov8n_90e_cust",
-            "yolov8n_60e_cust",
-            "yolov8n_30e_pre"]
+    values = ["yolov8m_120e",
+            "yolov8n_120e",
+            "yolov8n_90e",
+            "yolov8n_60e",
+            "yolov8n_30e"]
     return dict(zip(keys, values))[select_name]
 
 def Run(input_path, model, showonlybestconf, im):
@@ -71,36 +71,35 @@ def Run(input_path, model, showonlybestconf, im):
             for det in detections:
                 tracks.append([det[0],det[1],det[2],det[3],det[4]])
             platesonframe = []
-            track_bbs_ids = mot_tracker.update(np.asarray(tracks))
-            #print(track_bbs_ids)
-            #print(track_bbs_ids[0])
-            #print(track_bbs_ids[0,4])
-            
-
-            for lp_index, det_lp in enumerate(detections):
-                lp_x1, lp_y1, lp_x2, lp_y2, lp_score, lp_class_id = det_lp
-                if LicensePlateDetection.noOverlapp(platesonframe,det_lp):
-                    license_plate = frame[int(lp_y1):int(lp_y2), int(lp_x1):int(lp_x2), :]
-                    if im == 'weak':
-                        lp_text, lp_text_confscore, lp_prep = lp_reader.PrepAndRead(license_plate)
-                    elif im == 'mid':
-                        lp_text, lp_text_confscore, lp_prep = lp_reader.ModifiedPrepAndRead(license_plate)
-                    else:
-                        lp_text, lp_text_confscore, lp_prep = lp_reader.MultiplyPrepAndRead(license_plate)
-                    try:
-                        #print(f'good: {track_bbs_ids[lp_index]}, {lp_index}')
-                        if lp_index < len(detections):
-                            if lp_text != None:
-                                df_rows.append({'fr_number': frame_indexer,
-                                            'id': track_bbs_ids[lp_index,4],
-                                            'lp_bbox': [lp_x1, lp_y1, lp_x2, lp_y2],
-                                            'lp_bbox_score': lp_score,
-                                            'lp': lp_text,
-                                            'lp_score': lp_text_confscore})
-                    except:
-                        print(f'error: {track_bbs_ids}, {lp_index}')
-                        
-                platesonframe.append(det_lp)
+            if len(tracks) != 0:
+                track_bbs_ids = mot_tracker.update(np.asarray(tracks))
+                
+    
+                for lp_index, det_lp in enumerate(detections):
+                    lp_x1, lp_y1, lp_x2, lp_y2, lp_score, lp_class_id = det_lp
+                    if LicensePlateDetection.noOverlapp(platesonframe,det_lp):
+                        license_plate = frame[int(lp_y1):int(lp_y2), int(lp_x1):int(lp_x2), :]
+                        if im == 'weak':
+                            lp_text, lp_text_confscore, lp_prep = lp_reader.PrepAndRead(license_plate)
+                        elif im == 'mid':
+                            lp_text, lp_text_confscore, lp_prep = lp_reader.ModifiedPrepAndRead(license_plate)
+                        else:
+                            lp_text, lp_text_confscore, lp_prep = lp_reader.MultiplyPrepAndRead(license_plate)
+                        try:
+                            #print(f'good: {track_bbs_ids[lp_index]}, {lp_index}')
+                            if lp_index < len(detections):
+                                if lp_text != None:
+                                    df_rows.append({'fr_number': frame_indexer,
+                                                'id': track_bbs_ids[lp_index,4],
+                                                'lp_bbox': [lp_x1, lp_y1, lp_x2, lp_y2],
+                                                'lp_bbox_score': lp_score,
+                                                'lp': lp_text,
+                                                'lp_score': lp_text_confscore})
+                                    platesonframe.append(det_lp)
+                        except:
+                            print(f'error: {track_bbs_ids}, {lp_index}')
+                            
+                    
         frame_indexer += 1
     video_capture.release()
     
