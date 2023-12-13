@@ -1,6 +1,4 @@
 channels:
-  - anaconda
-  - conda-forge
   - defaults
 dependencies:
   - pip=23.3=py38hca03da5_0
