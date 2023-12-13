@@ -1,5 +1,6 @@
 channels:
-  - defaults
+  - anaconda
+  - conda-forge
 dependencies:
   - pip=23.3=py38hca03da5_0
   - ffmpeg=4.2.2=h04105a8_0
