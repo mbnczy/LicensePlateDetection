@@ -4,6 +4,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - pip=23.3=py38hca03da5_0
   - ffmpeg=4.2.2=h04105a8_0
   - ffmpeg-python=0.2.0=py_0
   - fftw=3.3.10=nompi_h3046061_108
