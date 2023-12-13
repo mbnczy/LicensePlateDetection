@@ -2,6 +2,7 @@ name: new_lpd
 channels:
   - defaults
 dependencies:
+  - ultralytics
   - python=3.8
   - ipykernel
   - torchvision
