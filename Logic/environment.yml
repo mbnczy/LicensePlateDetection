@@ -15,7 +15,6 @@ dependencies:
   - tensorflow-estimator=2.11.0
   - tensorflow-metadata=0.14.0
   - torchvision=0.15.2
-  - ultralytics=8.0.206
   - pip:
       - easyocr==1.7.1
       - ninja==1.11.1.1
@@ -26,3 +25,4 @@ dependencies:
       - python-bidi==0.4.2
       - shapely==2.0.2
       - thop==0.1.1-2209072238
+      - ultralytics
