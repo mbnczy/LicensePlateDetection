@@ -1,5 +1,4 @@
 channels:
-  - pytorch
   - anaconda
   - conda-forge
   - defaults
@@ -23,7 +22,6 @@ dependencies:
   - tensorflow-metadata=0.14.0=pyhe6710b0_1
   - torchvision=0.15.2=cpu_py38h31aa045_0
   - ultralytics=8.0.206=pyhf3ec037_0
-
   - pip:
       - easyocr==1.7.1
       - ninja==1.11.1.1
